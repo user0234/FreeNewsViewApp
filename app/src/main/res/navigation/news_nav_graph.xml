@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/news_nav_graph.xml"
+    app:startDestination="@id/newsHeadLineFragment">
+
+    <fragment
+        android:id="@+id/newsHeadLineFragment"
+        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.NewsHeadLineFragment"
+        android:label="NewsHeadLineFragment" >
+        <action
+            android:id="@+id/action_newsHeadLineFragment_to_savedArticleFragment"
+            app:destination="@id/savedArticleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newsSearchFragment"
+        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.NewsSearchFragment"
+        android:label="fragment_news_search"
+        tools:layout="@layout/fragment_news_search" >
+        <action
+            android:id="@+id/action_newsSearchFragment_to_savedArticleFragment"
+            app:destination="@id/savedArticleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_savedArticleFragment"
+            app:destination="@id/savedArticleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/savedArticleFragment"
+        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.SavedArticleFragment"
+        android:label="fragment_saved_article"
+        tools:layout="@layout/fragment_saved_article" />
+    <fragment
+        android:id="@+id/articleViewFragment"
+        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.ArticleViewFragment"
+        android:label="fragment_article_view_fragment"
+        tools:layout="@layout/fragment_article_view_fragment" >
+        <action
+            android:id="@+id/action_articleViewFragment_to_savedArticleFragment"
+            app:destination="@id/savedArticleFragment" />
+    </fragment>
+
+</navigation>
