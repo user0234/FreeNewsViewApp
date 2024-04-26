@@ -6,7 +6,7 @@ import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 object Constants {
 
     const val NEWS_API_BASEURL = "https://newsapi.org/v2/"
-    const val NEWS_API_KEY = "1fcb3729eb55483aae1f75c5de22a48e"
+    const val NEWS_API_KEY = "d91dd07987d04818b102b28b4e43aed3"
 
 
     fun getAllTheChips(): List<ChipDataClass> {

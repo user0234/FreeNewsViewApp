@@ -21,11 +21,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
 
         return NewsRetrofitInstance.newsApi.getSearchNews(
             query = searchQuery,
-            fromDate = getCurrentDate,
-            toDate = getCurrentDate,
             sortBy = sortBy,
-            totalPageSize = 20,
-            currentPageSize = currentPageSize
         )
     }
 

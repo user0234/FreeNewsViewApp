@@ -31,11 +31,7 @@ interface NewsApiInterface {
     @GET("everything")
     suspend fun getSearchNews(
         @Query("q") query: String,
-        @Query("from") fromDate: String,
-        @Query("to") toDate: String,
         @Query("sortBy") sortBy: String,
-        @Query("pageSize") totalPageSize: Int,
-        @Query("page") currentPageSize: Int,
         @Query("apiKey") newsApi: String = NEWS_API_KEY,
     ): Response<SearchNewsItem>
 

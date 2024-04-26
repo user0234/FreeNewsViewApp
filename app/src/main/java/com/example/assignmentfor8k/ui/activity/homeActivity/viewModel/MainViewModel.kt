@@ -3,7 +3,6 @@ package com.example.assignmentfor8k.ui.activity.homeActivity.viewModel
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -14,6 +13,7 @@ import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 import com.example.assignmentfor8k.repository.ChipRepository
 import com.example.assignmentfor8k.repository.NewsRepository
 import com.example.assignmentfor8k.retrofit.newsApi.model.Article
+import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
 import com.example.assignmentfor8k.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -111,14 +111,63 @@ class MainViewModel(
         }
     }
 
-    fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int) {
+    fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
 
         viewModelScope.launch(Dispatchers.IO) {
             val getItemWithId:ChipDataClass? = chipRepository.getItemFromId(first)
             getTopNews(getItemWithId?.value,sortedBy,currentPage)
+            callback(getItemWithId?.value)
         }
 
     }
 
+    /**
+     * search for news
+      */
+    val searchNews: MutableLiveData<Resource<SearchNewsItem>> = MutableLiveData()
+
+    var searchNewsResponse:SearchNewsItem? = null
+    fun getSearchNews(query: String,sortedBy: String,category: String?) =  viewModelScope.launch {
+        safeSearchNews(query,sortedBy,category)
+    }
+
+    private suspend fun safeSearchNews(query: String, sortedBy: String, category: String?,) {
+        Log.i("searchNews","search news started")
+
+        searchNews.postValue(Resource.Loading())
+        try {
+            if(true){
+                val response = newsRepository.searchNewsArticles(query, sortedBy,20)
+
+                searchNews.postValue(handleSearchNewsResponse(response))
+            } else{
+                searchNews.postValue(Resource.Error("Check your internet"))
+            }
+
+        } catch (t:Throwable){
+            searchNews.postValue(Resource.Error("an Error has occurred"))
+        }
+    }
+
+    private fun handleSearchNewsResponse(response: Response<SearchNewsItem>): Resource<SearchNewsItem> {
+        if(response.isSuccessful){
+            if (response.body() != null) {
+              //  searchNewsPage++
+                if(searchNewsResponse == null){
+                    searchNewsResponse = response.body()
+                }
+//                else{
+//                    val oldArticles = searchNewsResponse!!.articles
+//                    val newArticles = response.body()!!.articles
+//                    oldArticles.addAll(newArticles)
+//
+//
+//                }
+                return Resource.Success(searchNewsResponse?: response.body())
+            }
+        }
+
+        return Resource.Error(response.message())
+    }
 
 }
