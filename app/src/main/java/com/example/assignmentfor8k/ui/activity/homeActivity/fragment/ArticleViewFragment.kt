@@ -45,6 +45,7 @@ class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
             loadUrl(article!!.url)
             settings.allowContentAccess = true
             settings.allowFileAccess = true
+
         }
 
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
@@ -57,7 +58,7 @@ class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
             lifecycleScope.launch(Dispatchers.IO) {
                try{
 
-                   val url = "file:/${downloadDir}/${pageId}/index.html"
+                   val url = "file://${downloadDir}/${pageId}/index.html"
                    WebpageDownloader().download(
                        article!!.url,
                        DefaultFileSaver(File(downloadDir, pageId))

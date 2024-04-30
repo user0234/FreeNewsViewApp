@@ -50,7 +50,11 @@ class ArticleListAdaptor: RecyclerView.Adapter<ArticleListAdaptor.ArticleViewHol
           val currentItem = differ.currentList.get(position)
           val binding = holder.binding
 
-           binding.authorTv.text = currentItem.author
+           binding.authorTv.setOnClickListener {
+               onItemShare?.let {
+                   it(currentItem.url)
+               }
+           }
         binding.sourceTv.text = currentItem.source.name
         binding.titleTv.text  = currentItem.title
 
@@ -74,5 +78,10 @@ class ArticleListAdaptor: RecyclerView.Adapter<ArticleListAdaptor.ArticleViewHol
         onItemClickListener = listener
     }
 
+    private var onItemShare: ((String) -> Unit)? = null
+
+    fun setOnShare(listener: (String) -> Unit) {
+        onItemShare = listener
+    }
 
 }

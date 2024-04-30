@@ -15,7 +15,9 @@ import com.example.assignmentfor8k.repository.NewsRepository
 import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
+import com.example.assignmentfor8k.util.Event
 import com.example.assignmentfor8k.util.Resource
+import com.example.assignmentfor8k.util.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -193,6 +195,15 @@ class MainViewModel(
         }
 
         return Resource.Error(response.message())
+    }
+
+
+    private val _shareTextEvent = MutableLiveData<Event<String>>()
+    val handleShareText: LiveData<Event<String>>
+        get() = _shareTextEvent
+
+    fun shareUrl(it: String) {
+        _shareTextEvent.send(it)
     }
 
 }

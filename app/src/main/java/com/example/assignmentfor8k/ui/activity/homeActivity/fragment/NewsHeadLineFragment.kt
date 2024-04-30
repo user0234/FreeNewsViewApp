@@ -68,6 +68,10 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
 
         }
 
+        adaptorSearch.setOnShare {
+            viewModel.shareUrl(it)
+        }
+
         var job: Job?= null
         binding.searchView.editText.addTextChangedListener  { text ->
 
@@ -166,6 +170,10 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
             findNavController().navigate(
                 R.id.action_newsHeadLineFragment_to_articleViewFragment,bundle
             )
+        }
+
+        adaptor.setOnShare {
+            viewModel.shareUrl(it)
         }
 
         viewModel.topNews.observe(viewLifecycleOwner) {response ->

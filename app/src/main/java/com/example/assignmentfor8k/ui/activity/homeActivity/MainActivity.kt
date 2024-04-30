@@ -1,6 +1,7 @@
 package com.example.assignmentfor8k.ui.activity.homeActivity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import com.example.assignmentfor8k.ui.activity.homeActivity.viewModel.MainViewMo
 import com.example.assignmentfor8k.util.Constants.getAllTheChips
 import com.example.assignmentfor8k.util.SharedPrefFunc.getChipDataBase
 import com.example.assignmentfor8k.util.SharedPrefFunc.updateChipDataBase
+import com.example.assignmentfor8k.util.observeEvent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -43,6 +45,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
+
+        viewModel.handleShareText.observeEvent(this) {
+            shareUrlValue(it)
+        }
 
     }
 
@@ -69,4 +75,13 @@ class MainActivity : AppCompatActivity() {
             )
         )[MainViewModel::class.java]
     }
+
+    private fun shareUrlValue(url: String) {
+        val i = Intent(Intent.ACTION_SEND)
+        i.type = "text/plain"
+        i.putExtra(Intent.EXTRA_SUBJECT, "Sharing URl")
+        i.putExtra(Intent.EXTRA_TEXT, url)
+        startActivity(Intent.createChooser(i, "Share URL"))
+    }
+
 }

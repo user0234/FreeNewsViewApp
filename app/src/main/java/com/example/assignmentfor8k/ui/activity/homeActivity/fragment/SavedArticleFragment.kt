@@ -57,10 +57,16 @@ class SavedArticleFragment : Fragment(R.layout.fragment_saved_article) {
                 R.id.action_savedArticleFragment_to_articleViewFragment2,bundle
             )
         }
+
+        adaptor.setOnShare {
+              viewModel.shareUrl(it)
+        }
     }
 
     private fun setUpViewModel() {
         viewModel = (activity as MainActivity).viewModel
     }
+
+
 
 }
