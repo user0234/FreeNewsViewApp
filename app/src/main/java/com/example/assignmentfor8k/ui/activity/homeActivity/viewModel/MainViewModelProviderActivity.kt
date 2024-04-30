@@ -1,15 +1,16 @@
 package com.example.assignmentfor8k.ui.activity.homeActivity.viewModel
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.assignmentfor8k.applicationClass.AppApplicationClass
+import com.example.assignmentfor8k.applicationClass.NewsApplication
 import com.example.assignmentfor8k.repository.ChipRepository
 import com.example.assignmentfor8k.repository.NewsRepository
 
 class MainViewModelProviderActivity(
-   private val app:AppApplicationClass,
-   private val newsRepository: NewsRepository,
-   private val  chipRepository: ChipRepository
+    private val app: Application,
+    private val newsRepository: NewsRepository,
+    private val  chipRepository: ChipRepository
 
 ) : ViewModelProvider.Factory {
 

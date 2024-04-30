@@ -1,5 +1,6 @@
 package com.example.assignmentfor8k.ui.activity.homeActivity.viewModel
 
+import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -8,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.assignmentfor8k.applicationClass.AppApplicationClass
+import com.example.assignmentfor8k.applicationClass.NewsApplication
 import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 import com.example.assignmentfor8k.repository.ChipRepository
 import com.example.assignmentfor8k.repository.NewsRepository
@@ -22,12 +23,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
+/**
+ * Main View Model to save state of the fragment and communication between activity and fragments
+ */
 class MainViewModel(
-    private val app: AppApplicationClass,
+      app: Application,
     private val newsRepository: NewsRepository,
     private val chipRepository: ChipRepository
 ) : AndroidViewModel(app) {
 
+    /**
+     * article database management functions
+     */
     fun saveArticle(article: Article) {
         viewModelScope.launch(Dispatchers.IO) {
             newsRepository.saveNewsArticle(article)
@@ -39,6 +46,9 @@ class MainViewModel(
         newsRepository.getSavedArticlesLiveData()
 
 
+    /**
+     * category database functions
+     */
     fun saveChip(chipItem: ChipDataClass) {
         viewModelScope.launch(Dispatchers.IO) {
             chipRepository.enableChip(chipItem)
@@ -62,8 +72,11 @@ class MainViewModel(
 
     val topNews: MutableLiveData<Resource<TopNewsResponse>> = MutableLiveData()
 
-    var topNewsResponse: TopNewsResponse? = null
+    private var topNewsResponse: TopNewsResponse? = null
 
+    /**
+     * func to trigger news function in io coroutine
+     */
     fun getTopNews(category: String?, sortedBy: String,currentPage: Int?) = viewModelScope.launch {
         Log.i("getNews"," get News category - $category, currentpage - $currentPage , topnewspage - $topNewsPages")
 
@@ -74,10 +87,13 @@ class MainViewModel(
         safeBreakingNews(category, sortedBy, topNewsPages)
     }
 
+    /**
+     * func to handle the news response and handling errors
+     */
     private suspend fun safeBreakingNews(category: String?, sortedBy: String, pageItem: Int) {
         topNews.postValue(Resource.Loading())
         try {
-            if (true) {
+            if (hasInternetConnection()) {
                 val response = if (category == null) {
                     newsRepository.topNewArticles(sortedBy, "us", pageItem)
                 } else {
@@ -123,7 +139,7 @@ class MainViewModel(
 
     fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
         topNewsPages = 1
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             val getItemWithId:ChipDataClass? = chipRepository.getItemFromId(first)
             getTopNews(getItemWithId?.value,sortedBy,currentPage)
             callback(getItemWithId?.value)
@@ -131,15 +147,18 @@ class MainViewModel(
 
     }
 
-
+ // TODO fix the error - an Error has occurred android.app.Application cannot be cast to com.example.assignmentfor8k.applicationClass.NewsApplication
 
     private fun hasInternetConnection():Boolean {
-        val connectivityManager =  getApplication<AppApplicationClass>().getSystemService(
+
+        return true
+        val connectivityManager = getApplication<NewsApplication>().getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetwork ?: return false
-        val capabilities =  connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-        return when{
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return when {
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
@@ -153,7 +172,7 @@ class MainViewModel(
       */
     val searchNews: MutableLiveData<Resource<SearchNewsItem>> = MutableLiveData()
 
-    var searchNewsResponse:SearchNewsItem? = null
+    private var searchNewsResponse:SearchNewsItem? = null
     fun getSearchNews(query: String,sortedBy: String,category: String?) =  viewModelScope.launch {
         safeSearchNews(query,sortedBy,category)
     }
@@ -163,7 +182,7 @@ class MainViewModel(
 
         searchNews.postValue(Resource.Loading())
         try {
-            if(true){
+            if(hasInternetConnection()){
                 val response = newsRepository.searchNewsArticles(query, sortedBy,20)
 
                 searchNews.postValue(handleSearchNewsResponse(response))
