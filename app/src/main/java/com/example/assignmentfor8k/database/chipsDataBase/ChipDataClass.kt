@@ -9,7 +9,7 @@ data class ChipDataClass(
     @PrimaryKey
     val id:Int,
     val value:String,
-    val status:CategoryChipStatus
+    var status:CategoryChipStatus
 )
 
 

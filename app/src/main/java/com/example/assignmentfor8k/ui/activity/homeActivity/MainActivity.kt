@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+      //  enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
-        NavigationUI.setupWithNavController(navView(), navController)
+        NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
 
     }
 
@@ -55,10 +55,6 @@ class MainActivity : AppCompatActivity() {
                 viewModel.saveChip(it)
             }
         }
-    }
-
-    private fun navView(): BottomNavigationView {
-        return findViewById(R.id.bottomNavigationView)
     }
 
     private fun setUpViewModel() {

@@ -6,6 +6,7 @@ import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
 import com.example.assignmentfor8k.retrofit.newsApi.newRetrofit.NewsRetrofitInstance
+import com.example.assignmentfor8k.util.Constants.QUERY_PAGE_SIZE
 import com.example.assignmentfor8k.util.HelperFunction.getCurrentDate
 import retrofit2.Response
 
@@ -33,8 +34,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
 
         return NewsRetrofitInstance.newsApi.getTopNewsAll(
             countryCode,
-            sortBy = sortBy,
-            totalPageSize = 20,
+            totalPageSize = QUERY_PAGE_SIZE,
             currentPageSize = currentPage
         )
     }
@@ -50,8 +50,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
 
             countryCode,
             category,
-            sortBy = sortBy,
-            totalPageSize = 20,
+            totalPageSize = QUERY_PAGE_SIZE,
             currentPageSize = currentPage
         )
     }
@@ -69,7 +68,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
         //  newsDao.deleteAllArticle(articleList)
     }
 
-    override suspend fun getSavedArticlesLiveData(): LiveData<List<Article>?> {
+    override  fun getSavedArticlesLiveData(): LiveData<List<Article>?> {
         return newsDao.getSavedNewsArticles()
     }
 }

@@ -8,42 +8,46 @@
     <fragment
         android:id="@+id/newsHeadLineFragment"
         android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.NewsHeadLineFragment"
-        android:label="NewsHeadLineFragment" >
+        android:label="NewsHeadLineFragment">
+
         <action
-            android:id="@+id/action_newsHeadLineFragment_to_savedArticleFragment"
-            app:destination="@id/savedArticleFragment" />
+            android:id="@+id/action_newsHeadLineFragment_to_articleViewFragment"
+            app:destination="@id/articleViewFragment">
+            <argument
+                android:name="article"
+                app:argType="com.example.assignmentfor8k.retrofit.newsApi.model.Article" />
+        </action>
     </fragment>
-    <fragment
-        android:id="@+id/newsSearchFragment"
-        android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.NewsSearchFragment"
-        android:label="fragment_news_search"
-        tools:layout="@layout/fragment_news_search" >
-        <action
-            android:id="@+id/action_newsSearchFragment_to_savedArticleFragment"
-            app:destination="@id/savedArticleFragment" />
-    </fragment>
+
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
-        <action
-            android:id="@+id/action_profileFragment_to_savedArticleFragment"
-            app:destination="@id/savedArticleFragment" />
+        tools:layout="@layout/fragment_profile">
+
     </fragment>
     <fragment
         android:id="@+id/savedArticleFragment"
         android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.SavedArticleFragment"
         android:label="fragment_saved_article"
-        tools:layout="@layout/fragment_saved_article" />
+        tools:layout="@layout/fragment_saved_article">
+
+        <action
+            android:id="@+id/action_savedArticleFragment_to_articleViewFragment2"
+            app:destination="@id/articleViewFragment">
+            <argument
+                android:name="article"
+                app:argType="com.example.assignmentfor8k.retrofit.newsApi.model.Article" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/articleViewFragment"
         android:name="com.example.assignmentfor8k.ui.activity.homeActivity.fragment.ArticleViewFragment"
         android:label="fragment_article_view_fragment"
-        tools:layout="@layout/fragment_article_view_fragment" >
-        <action
-            android:id="@+id/action_articleViewFragment_to_savedArticleFragment"
-            app:destination="@id/savedArticleFragment" />
+        tools:layout="@layout/fragment_article_view_fragment">
+        <argument
+            android:name="article"
+            app:argType="com.example.assignmentfor8k.retrofit.newsApi.model.Article" />
     </fragment>
 
 </navigation>

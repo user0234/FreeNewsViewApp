@@ -32,5 +32,5 @@ interface NewsRepositoryBluePrint {
 
     suspend fun deleteMultipleNewsArticle(articleList : List<Article>)
 
-    suspend fun getSavedArticlesLiveData(): LiveData<List<Article>?>
+     fun getSavedArticlesLiveData(): LiveData<List<Article>?>
 }

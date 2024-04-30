@@ -14,7 +14,6 @@ interface NewsApiInterface {
         @Query("country") countryCode: String,
         @Query("pageSize") totalPageSize: Int,
         @Query("page") currentPageSize: Int,
-        @Query("sortBy") sortBy: String,
         @Query("apiKey") newsApi: String = NEWS_API_KEY,
     ): Response<TopNewsResponse>
 
@@ -24,7 +23,6 @@ interface NewsApiInterface {
         @Query("category") category: String?,
         @Query("pageSize") totalPageSize: Int,
         @Query("page") currentPageSize: Int,
-        @Query("sortBy") sortBy: String,
         @Query("apiKey") newsApi: String = NEWS_API_KEY,
     ): Response<TopNewsResponse>
 

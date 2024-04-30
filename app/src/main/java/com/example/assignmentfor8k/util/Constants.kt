@@ -7,6 +7,7 @@ object Constants {
 
     const val NEWS_API_BASEURL = "https://newsapi.org/v2/"
     const val NEWS_API_KEY = "d91dd07987d04818b102b28b4e43aed3"
+    const val QUERY_PAGE_SIZE = 20
 
 
     fun getAllTheChips(): List<ChipDataClass> {

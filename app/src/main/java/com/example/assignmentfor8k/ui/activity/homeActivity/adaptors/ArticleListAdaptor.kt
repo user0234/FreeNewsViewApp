@@ -15,6 +15,8 @@ class ArticleListAdaptor: RecyclerView.Adapter<ArticleListAdaptor.ArticleViewHol
 
      inner class ArticleViewHolder(val binding: ItemArticlePreviewBinding) :
         RecyclerView.ViewHolder(binding.root)
+
+
     // for faster change in view
     private val differCallBack = object : DiffUtil.ItemCallback<Article>(){
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
@@ -58,6 +60,11 @@ class ArticleListAdaptor: RecyclerView.Adapter<ArticleListAdaptor.ArticleViewHol
             .placeholder(R.color.blue)
             .into(binding.newsImageView)
 
+        binding.root.rootView.setOnClickListener {
+            onItemClickListener?.let {
+                it(currentItem)
+            }
+        }
 
     }
 

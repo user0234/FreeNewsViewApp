@@ -27,7 +27,7 @@ data class Article(
     val title: String,
     @PrimaryKey
     @SerializedName("url")
-    val url: String,
+    var url: String,
     @SerializedName("urlToImage")
     val urlToImage: String?
 ) : Parcelable

@@ -33,6 +33,10 @@ class MainViewModel(
 
     }
 
+    fun getSavedArticles() =
+        newsRepository.getSavedArticlesLiveData()
+
+
     fun saveChip(chipItem: ChipDataClass) {
         viewModelScope.launch(Dispatchers.IO) {
             chipRepository.enableChip(chipItem)
@@ -43,16 +47,29 @@ class MainViewModel(
         return chipRepository.getAllEnabledChips()
     }
 
+    fun getAllChips(): LiveData<List<ChipDataClass>?> {
+        return chipRepository.getAllChips()
+    }
+
+
+
     /**
      * Top News setup
      */
+    var topNewsPages: Int = 1
 
     val topNews: MutableLiveData<Resource<TopNewsResponse>> = MutableLiveData()
 
     var topNewsResponse: TopNewsResponse? = null
 
-    fun getTopNews(category: String?, sortedBy: String, pageItem: Int) = viewModelScope.launch {
-        safeBreakingNews(category, sortedBy, pageItem)
+    fun getTopNews(category: String?, sortedBy: String,currentPage: Int?) = viewModelScope.launch {
+        Log.i("getNews"," get News category - $category, currentpage - $currentPage , topnewspage - $topNewsPages")
+
+        if(currentPage!=null){
+           topNewsPages = currentPage
+       }
+
+        safeBreakingNews(category, sortedBy, topNewsPages)
     }
 
     private suspend fun safeBreakingNews(category: String?, sortedBy: String, pageItem: Int) {
@@ -71,30 +88,47 @@ class MainViewModel(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.i("MainViewModel"," error message - ${e.message}")
-            topNews.postValue(Resource.Error("an Error has occurred ${e.message}"))
+             topNews.postValue(Resource.Error("an Error has occurred ${e.message}"))
         }
     }
 
     private fun handleBreakingNewsResponse(response: Response<TopNewsResponse>): Resource<TopNewsResponse> {
         if (response.isSuccessful) {
             if (response.body() != null) {
+                if(topNewsResponse == null){
+                    topNewsResponse = response.body()
+                }else{
+                    Log.i("getNews"," response item size  handle- ${topNewsResponse?.articles?.size} , ")
 
-//                if(breakingNewsResponse == null){
-//
-//                }else{
-//                    val oldArticles = breakingNewsResponse!!.articles
-//                    val newArticles = response.body()!!.articles
-//                    oldArticles.addAll(newArticles)
-//
-//                }
-                topNewsResponse = response.body()
+                    if(topNewsPages==1){
+                        topNewsResponse = response.body()
+                    }else{
+                        val newArticles = response.body()!!.articles
+                        topNewsResponse!!.articles.addAll(newArticles)
+                    }
+
+                }
+                Log.i("getNews"," response item size  handle- ${topNewsResponse?.articles?.size} , ")
+                topNewsPages++
                 return Resource.Success(topNewsResponse ?: response.body())
             }
+
+
         }
 
         return Resource.Error(response.message())
     }
+
+    fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
+        topNewsPages = 1
+        viewModelScope.launch(Dispatchers.IO) {
+            val getItemWithId:ChipDataClass? = chipRepository.getItemFromId(first)
+            getTopNews(getItemWithId?.value,sortedBy,currentPage)
+            callback(getItemWithId?.value)
+        }
+
+    }
+
 
 
     private fun hasInternetConnection():Boolean {
@@ -111,15 +145,6 @@ class MainViewModel(
         }
     }
 
-    fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val getItemWithId:ChipDataClass? = chipRepository.getItemFromId(first)
-            getTopNews(getItemWithId?.value,sortedBy,currentPage)
-            callback(getItemWithId?.value)
-        }
-
-    }
 
     /**
      * search for news

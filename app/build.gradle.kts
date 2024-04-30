@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-parcelize")
     id("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -60,6 +61,11 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.5.0")
 
+
+    // webpage made offline
+
+    implementation ("com.github.diebietse:webpage-downloader:0.2.0")
+
     // room database dependency
     val room_version = "2.6.0"
 
@@ -83,5 +89,8 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:$bumTech_version")  // Glide
     kapt ("com.github.bumptech.glide:compiler:$bumTech_version")
+
+    implementation ("androidx.webkit:webkit:1.10.0")
+
 
 }
