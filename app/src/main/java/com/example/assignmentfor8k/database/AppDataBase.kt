@@ -10,7 +10,7 @@ import com.example.assignmentfor8k.database.chipsDataBase.ChipsDao
 import com.example.assignmentfor8k.database.newsDataBase.NewsDao
 import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 
-
+// main app database with 2 tables
 @Database(
     entities = [Article::class,ChipDataClass::class],
     version = 1, exportSchema = false

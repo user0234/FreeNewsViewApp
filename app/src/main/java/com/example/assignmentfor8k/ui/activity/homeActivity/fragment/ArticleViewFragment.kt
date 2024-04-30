@@ -48,6 +48,8 @@ class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
 
         }
 
+        // saving the article offline and then replacing the url for offline reading
+
         val fab: FloatingActionButton = view.findViewById(R.id.fab)
         fab.setOnClickListener {
             showProgressBar()
@@ -95,14 +97,6 @@ class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
 
         val ARTICLE_ARG = "article"
 
-        @JvmStatic
-        fun newInstance(article: Article) =
-            ArticleViewFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARTICLE_ARG, article)
-
-                }
-            }
     }
 
 }

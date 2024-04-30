@@ -100,7 +100,7 @@ class MainViewModel(
                     newsRepository.topNewArticlesCategory(category, sortedBy, "us", pageItem)
                 }
 
-                topNews.postValue(handleBreakingNewsResponse(response))
+                topNews.postValue(handleTopNewsResponse(response))
             } else {
                 topNews.postValue(Resource.Error("Please Check Internet Connection"))
             }
@@ -110,7 +110,12 @@ class MainViewModel(
         }
     }
 
-    private fun handleBreakingNewsResponse(response: Response<TopNewsResponse>): Resource<TopNewsResponse> {
+
+    /**
+     * func to handle the top news response and updating progress and results with live data
+     */
+
+    private fun handleTopNewsResponse(response: Response<TopNewsResponse>): Resource<TopNewsResponse> {
         if (response.isSuccessful) {
             if (response.body() != null) {
                 if(topNewsResponse == null){
@@ -137,6 +142,9 @@ class MainViewModel(
         return Resource.Error(response.message())
     }
 
+    /**
+     * func to start top news response when category are switches
+     */
     fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
         topNewsPages = 1
         viewModelScope.launch  {
@@ -168,7 +176,7 @@ class MainViewModel(
 
 
     /**
-     * search for news
+     * search for news func similar to the top news with query peremeter
       */
     val searchNews: MutableLiveData<Resource<SearchNewsItem>> = MutableLiveData()
 
@@ -216,6 +224,9 @@ class MainViewModel(
         return Resource.Error(response.message())
     }
 
+    /**
+     * Event handler to share url
+     */
 
     private val _shareTextEvent = MutableLiveData<Event<String>>()
     val handleShareText: LiveData<Event<String>>

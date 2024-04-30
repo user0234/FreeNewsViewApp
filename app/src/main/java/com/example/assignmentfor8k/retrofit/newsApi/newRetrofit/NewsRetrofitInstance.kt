@@ -8,6 +8,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ *
+ * retrofit instance for news api
+ */
 
 class NewsRetrofitInstance {
     companion object {

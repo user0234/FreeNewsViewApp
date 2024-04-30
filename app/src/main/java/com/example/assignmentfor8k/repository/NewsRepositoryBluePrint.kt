@@ -6,6 +6,12 @@ import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
 import retrofit2.Response
 
+
+/**
+ * blue print class for the repository to keep it clean
+ */
+
+
 interface NewsRepositoryBluePrint {
 
     suspend fun searchNewsArticles(
