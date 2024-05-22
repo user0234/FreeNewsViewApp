@@ -7,15 +7,16 @@ import android.widget.AbsListView
 import android.widget.ProgressBar
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.assignmentfor8k.R
 import com.example.assignmentfor8k.databinding.FragmentTopNewsBinding
-import com.example.assignmentfor8k.ui.activity.homeActivity.MainActivity
 import com.example.assignmentfor8k.ui.activity.homeActivity.adaptors.ArticleListAdaptor
 import com.example.assignmentfor8k.ui.activity.homeActivity.viewModel.MainViewModel
 import com.example.assignmentfor8k.util.Constants.QUERY_PAGE_SIZE
+import com.example.assignmentfor8k.util.HelperFunction.checkEditableEmptyOrNull
 import com.example.assignmentfor8k.util.HelperFunction.showSnackBar
 import com.example.assignmentfor8k.util.Resource
 import com.google.android.material.chip.Chip
@@ -32,15 +33,14 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
     var isLastPage = false
     var isScrolling = false
     private lateinit var binding: FragmentTopNewsBinding
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.news_nav_graph_xml)
     private lateinit var adaptor: ArticleListAdaptor
     private lateinit var adaptorSearch: ArticleListAdaptor
     private var category: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpViewModel()
-        binding = FragmentTopNewsBinding.bind(view)
+         binding = FragmentTopNewsBinding.bind(view)
         setUpCategoryChips()
         setUpNews()
         setUpSearchAdaptor()
@@ -53,7 +53,6 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
         adaptorSearch = ArticleListAdaptor()
         binding.searchRecyclerView.adapter = adaptorSearch
         binding.searchRecyclerView.layoutManager = LinearLayoutManager(activity)
-        //  binding.newsListRv.addOnScrollListener(this@NewsHeadLineFragment.scrollListener)
         adaptorSearch.setOnItemClickListener { articleItem ->
 
             val bundle = Bundle().apply {
@@ -78,12 +77,11 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
             job?.cancel()
             job = MainScope().launch {
                 delay(500L)
-                if (text != null) {
-                    if (text.toString().isNotEmpty()) {
-                        Log.i("searchNews", "search news started")
-                        viewModel.getSearchNews(text.toString(), "relevancy", category)
-                    }
+                if(checkEditableEmptyOrNull(text)){
+                    Log.i("searchNews", "search news started")
+                    viewModel.getSearchNews(text.toString(), "relevancy", category)
                 }
+
             }
         }
 
@@ -264,10 +262,6 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
             }
 
         }
-    }
-
-    private fun setUpViewModel() {
-        viewModel = (activity as MainActivity).viewModel
     }
 
     companion object {

@@ -7,6 +7,7 @@ import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.diebietse.webpage.downloader.DefaultFileSaver
@@ -27,7 +28,7 @@ import kotlin.math.absoluteValue
 class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
 
     private lateinit var binding: FragmentArticleViewFragmentBinding
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.news_nav_graph_xml)
     private var article:Article? = null
      val args: ArticleViewFragmentArgs by navArgs()
 
@@ -35,7 +36,6 @@ class ArticleViewFragment : Fragment(R.layout.fragment_article_view_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentArticleViewFragmentBinding.bind(view)
-        viewModel = (activity as MainActivity).viewModel
         article =  args.article
 
         val webView: WebView = binding.webView

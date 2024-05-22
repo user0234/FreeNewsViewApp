@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import com.example.assignmentfor8k.database.chipsDataBase.CategoryChipStatus
 import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 import com.example.assignmentfor8k.database.chipsDataBase.ChipsDao
+import javax.inject.Inject
 
-class ChipRepository(private val chipDao: ChipsDao) : ChipRepositoryBlueprint {
+class ChipRepository @Inject constructor(private val chipDao: ChipsDao) : ChipRepositoryBlueprint {
+
+
     override suspend fun enableChip(chipItem: ChipDataClass) {
         chipDao.saveChip(chipItem)
     }
@@ -14,16 +17,16 @@ class ChipRepository(private val chipDao: ChipsDao) : ChipRepositoryBlueprint {
         chipDao.deleteChip(chipItem)
     }
 
-    override  fun getAllEnabledChips(): LiveData<List<ChipDataClass>?> {
+    override fun getAllEnabledChips(): LiveData<List<ChipDataClass>?> {
         return chipDao.getEnabledChips(CategoryChipStatus.Enabled)
     }
 
-    override fun getAllChips():LiveData<List<ChipDataClass>?> {
+    override fun getAllChips(): LiveData<List<ChipDataClass>?> {
         return chipDao.getAllChips()
     }
 
     override suspend fun getItemFromId(id: Int): ChipDataClass? {
-            return chipDao.getChipFromId(id)
+        return chipDao.getChipFromId(id)
     }
 
 }

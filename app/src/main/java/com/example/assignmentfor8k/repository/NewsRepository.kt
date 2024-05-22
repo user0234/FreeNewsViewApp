@@ -5,13 +5,18 @@ import com.example.assignmentfor8k.database.newsDataBase.NewsDao
 import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
+import com.example.assignmentfor8k.retrofit.newsApi.newRetrofit.NewsApiInterface
 import com.example.assignmentfor8k.retrofit.newsApi.newRetrofit.NewsRetrofitInstance
 import com.example.assignmentfor8k.util.Constants.QUERY_PAGE_SIZE
 import com.example.assignmentfor8k.util.HelperFunction.getCurrentDate
 import retrofit2.Response
+import javax.inject.Inject
 
-class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
-
+class NewsRepository @Inject constructor(
+    private val newsDao: NewsDao,
+    private val newsApi: NewsApiInterface
+):
+    NewsRepositoryBluePrint {
 
     override suspend fun searchNewsArticles(
         searchQuery: String,
@@ -20,7 +25,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
     ): Response<SearchNewsItem> {
         val getCurrentDate: String = getCurrentDate()
 
-        return NewsRetrofitInstance.newsApi.getSearchNews(
+        return newsApi.getSearchNews(
             query = searchQuery,
             sortBy = sortBy,
         )
@@ -32,7 +37,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
         currentPage: Int
     ): Response<TopNewsResponse> {
 
-        return NewsRetrofitInstance.newsApi.getTopNewsAll(
+        return newsApi.getTopNewsAll(
             countryCode,
             totalPageSize = QUERY_PAGE_SIZE,
             currentPageSize = currentPage
@@ -46,7 +51,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
         currentPage: Int
     ): Response<TopNewsResponse> {
 
-        return NewsRetrofitInstance.newsApi.getTopNewsCategory(
+        return newsApi.getTopNewsCategory(
 
             countryCode,
             category,
@@ -68,7 +73,7 @@ class NewsRepository(private val newsDao: NewsDao) : NewsRepositoryBluePrint {
         //  newsDao.deleteAllArticle(articleList)
     }
 
-    override  fun getSavedArticlesLiveData(): LiveData<List<Article>?> {
+    override fun getSavedArticlesLiveData(): LiveData<List<Article>?> {
         return newsDao.getSavedNewsArticles()
     }
 }

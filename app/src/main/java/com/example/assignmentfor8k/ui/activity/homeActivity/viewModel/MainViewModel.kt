@@ -19,14 +19,18 @@ import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
 import com.example.assignmentfor8k.util.Event
 import com.example.assignmentfor8k.util.Resource
 import com.example.assignmentfor8k.util.send
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import javax.inject.Inject
 
 /**
  * Main View Model to save state of the fragment and communication between activity and fragments
  */
-class MainViewModel(
+
+@HiltViewModel
+class MainViewModel @Inject constructor (
       app: Application,
     private val newsRepository: NewsRepository,
     private val chipRepository: ChipRepository
@@ -85,6 +89,7 @@ class MainViewModel(
        }
 
         safeBreakingNews(category, sortedBy, topNewsPages)
+
     }
 
     /**
@@ -155,11 +160,9 @@ class MainViewModel(
 
     }
 
- // TODO fix the error - an Error has occurred android.app.Application cannot be cast to com.example.assignmentfor8k.applicationClass.NewsApplication
 
     private fun hasInternetConnection():Boolean {
 
-        return true
         val connectivityManager = getApplication<NewsApplication>().getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
@@ -182,10 +185,10 @@ class MainViewModel(
 
     private var searchNewsResponse:SearchNewsItem? = null
     fun getSearchNews(query: String,sortedBy: String,category: String?) =  viewModelScope.launch {
-        safeSearchNews(query,sortedBy,category)
+        safeSearchNews(query, sortedBy)
     }
 
-    private suspend fun safeSearchNews(query: String, sortedBy: String, category: String?,) {
+    private suspend fun safeSearchNews(query: String, sortedBy: String,) {
         Log.i("searchNews","search news started")
 
         searchNews.postValue(Resource.Loading())
@@ -210,13 +213,6 @@ class MainViewModel(
                 if(searchNewsResponse == null){
                     searchNewsResponse = response.body()
                 }
-//                else{
-//                    val oldArticles = searchNewsResponse!!.articles
-//                    val newArticles = response.body()!!.articles
-//                    oldArticles.addAll(newArticles)
-//
-//
-//                }
                 return Resource.Success(searchNewsResponse?: response.body())
             }
         }

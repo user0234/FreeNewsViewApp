@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assignmentfor8k.R
 import com.example.assignmentfor8k.databinding.FragmentProfileBinding
@@ -20,7 +21,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var binding: FragmentProfileBinding
     private lateinit var chipListAdaptor:ChipItemEnableListAdaptor
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.news_nav_graph_xml)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +51,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setUpViewModel() {
-        viewModel = (activity as MainActivity).viewModel
+
     }
 
 }

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.assignmentfor8k.R
@@ -19,7 +20,7 @@ class SavedArticleFragment : Fragment(R.layout.fragment_saved_article) {
 
     private lateinit var binding:FragmentSavedArticleBinding
     private lateinit var adaptor: ArticleListAdaptor
-    private lateinit var viewModel:MainViewModel
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.news_nav_graph_xml)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,8 +65,7 @@ class SavedArticleFragment : Fragment(R.layout.fragment_saved_article) {
     }
 
     private fun setUpViewModel() {
-        viewModel = (activity as MainActivity).viewModel
-    }
+     }
 
 
 
