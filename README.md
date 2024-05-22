@@ -9,6 +9,7 @@ Features -
   - Uses Navigation components
   - Uses ROOM database
   - Uses Retrofit for network operations
+  - Dependency Injection Using hilt Dagger
 
 
 App Details
