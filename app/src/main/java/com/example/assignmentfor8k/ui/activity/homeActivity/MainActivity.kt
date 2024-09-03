@@ -2,12 +2,15 @@ package com.example.assignmentfor8k.ui.activity.homeActivity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.assignmentfor8k.R
 import com.example.assignmentfor8k.applicationClass.NewsApplication
@@ -32,14 +35,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-     val viewModel: MainViewModel by viewModels()
+    val viewModel: MainViewModel by viewModels()
 
     @Inject
-    lateinit var chipDateItem:List<ChipDataClass>
+    lateinit var chipDateItem: List<ChipDataClass>
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-      //  enableEdgeToEdge()
+        //  enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -79,6 +82,11 @@ class MainActivity : AppCompatActivity() {
         i.putExtra(Intent.EXTRA_SUBJECT, "Sharing URl")
         i.putExtra(Intent.EXTRA_TEXT, url)
         startActivity(Intent.createChooser(i, "Share URL"))
+    }
+
+    override fun onBackPressed() {
+
+        super.onBackPressed()
     }
 
 }

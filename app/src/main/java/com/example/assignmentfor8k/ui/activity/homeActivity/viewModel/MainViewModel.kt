@@ -8,7 +8,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.diebietse.webpage.downloader.DefaultFileSaver
+import com.diebietse.webpage.downloader.WebpageDownloader
 import com.example.assignmentfor8k.applicationClass.NewsApplication
 import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 import com.example.assignmentfor8k.repository.ChipRepository
@@ -17,21 +20,25 @@ import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
 import com.example.assignmentfor8k.util.Event
+import com.example.assignmentfor8k.util.HelperFunction
 import com.example.assignmentfor8k.util.Resource
 import com.example.assignmentfor8k.util.send
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.io.File
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 /**
  * Main View Model to save state of the fragment and communication between activity and fragments
  */
 
 @HiltViewModel
-class MainViewModel @Inject constructor (
-      app: Application,
+class MainViewModel @Inject constructor(
+    app: Application,
     private val newsRepository: NewsRepository,
     private val chipRepository: ChipRepository
 ) : AndroidViewModel(app) {
@@ -39,15 +46,51 @@ class MainViewModel @Inject constructor (
     /**
      * article database management functions
      */
-    fun saveArticle(article: Article) {
+    fun saveArticle(
+        article: Article, applicationContext: Context, callback: (String, Boolean) -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
-            newsRepository.saveNewsArticle(article)
+
+            if (article.url.startsWith("file://")) {
+                newsRepository.deleteNewsArticle(article)
+                callback("article removed", false)
+
+            } else {
+                callback("Saving article", true)
+
+                val downloadDir = File(applicationContext.filesDir, "offline")
+                val pageId = article.hashCode().absoluteValue.toString()
+
+                try {
+
+                    val url = "file://${downloadDir}/${pageId}/index.html"
+                    WebpageDownloader().download(
+                        article.url, DefaultFileSaver(File(downloadDir, pageId))
+                    )
+                    article.url = url
+                    newsRepository.saveNewsArticle(article)
+                    callback("article Saved", false)
+
+                } catch (e: Exception) {
+                    callback("Some error occurred while saving article", false)
+
+                }
+
+            }
+
         }
 
     }
 
-    fun getSavedArticles() =
-        newsRepository.getSavedArticlesLiveData()
+    fun deleteArticle(article: Article) {
+        viewModelScope.launch(Dispatchers.IO) {
+            newsRepository.deleteNewsArticle(article)
+        }
+
+    }
+
+
+    fun getSavedArticles() = newsRepository.getSavedArticlesLiveData()
 
 
     /**
@@ -68,7 +111,6 @@ class MainViewModel @Inject constructor (
     }
 
 
-
     /**
      * Top News setup
      */
@@ -81,12 +123,15 @@ class MainViewModel @Inject constructor (
     /**
      * func to trigger news function in io coroutine
      */
-    fun getTopNews(category: String?, sortedBy: String,currentPage: Int?) = viewModelScope.launch {
-        Log.i("getNews"," get News category - $category, currentpage - $currentPage , topnewspage - $topNewsPages")
+    fun getTopNews(category: String?, sortedBy: String, currentPage: Int?) = viewModelScope.launch {
+        Log.i(
+            "getNews",
+            " get News category - $category, currentpage - $currentPage , topnewspage - $topNewsPages"
+        )
 
-        if(currentPage!=null){
-           topNewsPages = currentPage
-       }
+        if (currentPage != null) {
+            topNewsPages = currentPage
+        }
 
         safeBreakingNews(category, sortedBy, topNewsPages)
 
@@ -111,7 +156,7 @@ class MainViewModel @Inject constructor (
             }
         } catch (e: Exception) {
             e.printStackTrace()
-             topNews.postValue(Resource.Error("an Error has occurred ${e.message}"))
+            topNews.postValue(Resource.Error("an Error has occurred ${e.message}"))
         }
     }
 
@@ -123,20 +168,25 @@ class MainViewModel @Inject constructor (
     private fun handleTopNewsResponse(response: Response<TopNewsResponse>): Resource<TopNewsResponse> {
         if (response.isSuccessful) {
             if (response.body() != null) {
-                if(topNewsResponse == null){
+                if (topNewsResponse == null) {
                     topNewsResponse = response.body()
-                }else{
-                    Log.i("getNews"," response item size  handle- ${topNewsResponse?.articles?.size} , ")
+                } else {
+                    Log.i(
+                        "getNews",
+                        " response item size  handle- ${topNewsResponse?.articles?.size} , "
+                    )
 
-                    if(topNewsPages==1){
+                    if (topNewsPages == 1) {
                         topNewsResponse = response.body()
-                    }else{
+                    } else {
                         val newArticles = response.body()!!.articles
                         topNewsResponse!!.articles.addAll(newArticles)
                     }
 
                 }
-                Log.i("getNews"," response item size  handle- ${topNewsResponse?.articles?.size} , ")
+                Log.i(
+                    "getNews", " response item size  handle- ${topNewsResponse?.articles?.size} , "
+                )
                 topNewsPages++
                 return Resource.Success(topNewsResponse ?: response.body())
             }
@@ -150,25 +200,26 @@ class MainViewModel @Inject constructor (
     /**
      * func to start top news response when category are switches
      */
-    fun startTopNewsFromCategoryId(first: Int,sortedBy:String,currentPage :Int,callback: (String?) -> Unit) {
+    fun startTopNewsFromCategoryId(
+        first: Int, sortedBy: String, currentPage: Int, callback: (String?) -> Unit
+    ) {
         topNewsPages = 1
-        viewModelScope.launch  {
-            val getItemWithId:ChipDataClass? = chipRepository.getItemFromId(first)
-            getTopNews(getItemWithId?.value,sortedBy,currentPage)
+        viewModelScope.launch {
+            val getItemWithId: ChipDataClass? = chipRepository.getItemFromId(first)
+            getTopNews(getItemWithId?.value, sortedBy, currentPage)
             callback(getItemWithId?.value)
         }
 
     }
 
 
-    private fun hasInternetConnection():Boolean {
+    private fun hasInternetConnection(): Boolean {
 
         val connectivityManager = getApplication<NewsApplication>().getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetwork ?: return false
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
         return when {
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
@@ -180,40 +231,40 @@ class MainViewModel @Inject constructor (
 
     /**
      * search for news func similar to the top news with query peremeter
-      */
+     */
     val searchNews: MutableLiveData<Resource<SearchNewsItem>> = MutableLiveData()
 
-    private var searchNewsResponse:SearchNewsItem? = null
-    fun getSearchNews(query: String,sortedBy: String,category: String?) =  viewModelScope.launch {
+    private var searchNewsResponse: SearchNewsItem? = null
+    fun getSearchNews(query: String, sortedBy: String, category: String?) = viewModelScope.launch {
         safeSearchNews(query, sortedBy)
     }
 
-    private suspend fun safeSearchNews(query: String, sortedBy: String,) {
-        Log.i("searchNews","search news started")
+    private suspend fun safeSearchNews(query: String, sortedBy: String) {
+        Log.i("searchNews", "search news started")
 
         searchNews.postValue(Resource.Loading())
         try {
-            if(hasInternetConnection()){
-                val response = newsRepository.searchNewsArticles(query, sortedBy,20)
+            if (hasInternetConnection()) {
+                val response = newsRepository.searchNewsArticles(query, sortedBy, 20)
 
                 searchNews.postValue(handleSearchNewsResponse(response))
-            } else{
+            } else {
                 searchNews.postValue(Resource.Error("Check your internet"))
             }
 
-        } catch (t:Throwable){
+        } catch (t: Throwable) {
             searchNews.postValue(Resource.Error("an Error has occurred"))
         }
     }
 
     private fun handleSearchNewsResponse(response: Response<SearchNewsItem>): Resource<SearchNewsItem> {
-        if(response.isSuccessful){
+        if (response.isSuccessful) {
             if (response.body() != null) {
-              //  searchNewsPage++
-                if(searchNewsResponse == null){
+                //  searchNewsPage++
+                if (searchNewsResponse == null) {
                     searchNewsResponse = response.body()
                 }
-                return Resource.Success(searchNewsResponse?: response.body())
+                return Resource.Success(searchNewsResponse ?: response.body())
             }
         }
 

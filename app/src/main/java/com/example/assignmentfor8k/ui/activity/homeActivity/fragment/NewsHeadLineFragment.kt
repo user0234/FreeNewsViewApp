@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AbsListView
 import android.widget.ProgressBar
+import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -40,13 +41,27 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-         binding = FragmentTopNewsBinding.bind(view)
+        binding = FragmentTopNewsBinding.bind(view)
         setUpCategoryChips()
         setUpNews()
         setUpSearchAdaptor()
-
+        setUpBackPressed()
         viewModel.getTopNews(null, "relevancy", 1)
 
+    }
+
+    private fun setUpBackPressed() {
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.searchView.isShowing) {
+                        binding.searchView.hide()
+                    } else {
+                        activity?.onBackPressed()
+                    }
+                }
+            })
     }
 
     private fun setUpSearchAdaptor() {
@@ -77,7 +92,7 @@ class NewsHeadLineFragment : Fragment(R.layout.fragment_top_news) {
             job?.cancel()
             job = MainScope().launch {
                 delay(500L)
-                if(checkEditableEmptyOrNull(text)){
+                if (checkEditableEmptyOrNull(text)) {
                     Log.i("searchNews", "search news started")
                     viewModel.getSearchNews(text.toString(), "relevancy", category)
                 }
