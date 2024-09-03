@@ -11,6 +11,7 @@ Features -
   - Uses Retrofit for network operations
   - Dependency Injection Using hilt Dagger
 
+applink - https://drive.google.com/drive/folders/1IwPlHhuWeuSvQBxartYShF1LMA_Pd7X3?usp=sharing
 
 App Details
 
