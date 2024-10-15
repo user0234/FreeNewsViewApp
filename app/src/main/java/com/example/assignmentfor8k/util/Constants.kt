@@ -4,7 +4,7 @@ import com.example.assignmentfor8k.database.chipsDataBase.CategoryChipStatus
 import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 
 object Constants {
-
+    const val BASE_URL_IP_COUNTRY = "https://api.country.is"
     const val NEWS_API_BASEURL = "https://newsapi.org/v2/"
     const val NEWS_API_KEY = "d91dd07987d04818b102b28b4e43aed3"
     const val QUERY_PAGE_SIZE = 20

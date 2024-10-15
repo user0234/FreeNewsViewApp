@@ -2,31 +2,20 @@ package com.example.assignmentfor8k.ui.activity.homeActivity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.assignmentfor8k.R
-import com.example.assignmentfor8k.applicationClass.NewsApplication
-import com.example.assignmentfor8k.database.AppDataBase
 import com.example.assignmentfor8k.database.chipsDataBase.ChipDataClass
 import com.example.assignmentfor8k.databinding.ActivityMainBinding
-import com.example.assignmentfor8k.repository.ChipRepository
-import com.example.assignmentfor8k.repository.NewsRepository
 import com.example.assignmentfor8k.ui.activity.homeActivity.viewModel.MainViewModel
-import com.example.assignmentfor8k.ui.activity.homeActivity.viewModel.MainViewModelProviderActivity
-import com.example.assignmentfor8k.util.Constants.getAllTheChips
-import com.example.assignmentfor8k.util.SharedPrefFunc.getChipDataBase
-import com.example.assignmentfor8k.util.SharedPrefFunc.updateChipDataBase
 import com.example.assignmentfor8k.util.observeEvent
+import com.example.assignmentfor8k.util.sharePref.ChipData.getChipDataBase
+import com.example.assignmentfor8k.util.sharePref.ChipData.updateChipDataBase
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 /**
@@ -61,7 +50,13 @@ class MainActivity : AppCompatActivity() {
         viewModel.handleShareText.observeEvent(this) {
             shareUrlValue(it)
         }
+        startIpSearch()
 
+
+    }
+
+    private fun startIpSearch() {
+        viewModel.startIpGetter()
     }
 
     private fun setUpChipItems() {
@@ -82,11 +77,6 @@ class MainActivity : AppCompatActivity() {
         i.putExtra(Intent.EXTRA_SUBJECT, "Sharing URl")
         i.putExtra(Intent.EXTRA_TEXT, url)
         startActivity(Intent.createChooser(i, "Share URL"))
-    }
-
-    override fun onBackPressed() {
-
-        super.onBackPressed()
     }
 
 }

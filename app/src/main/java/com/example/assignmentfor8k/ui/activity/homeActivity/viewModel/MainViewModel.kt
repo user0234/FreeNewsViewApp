@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.diebietse.webpage.downloader.DefaultFileSaver
 import com.diebietse.webpage.downloader.WebpageDownloader
@@ -19,14 +18,16 @@ import com.example.assignmentfor8k.repository.NewsRepository
 import com.example.assignmentfor8k.retrofit.newsApi.model.Article
 import com.example.assignmentfor8k.retrofit.newsApi.model.SearchNewsItem
 import com.example.assignmentfor8k.retrofit.newsApi.model.TopNewsResponse
+import com.example.assignmentfor8k.retrofit.userIp.Retrofit.RetrofitInstanceIpCall
+import com.example.assignmentfor8k.retrofit.userIp.api.IpRegionCallInterface
 import com.example.assignmentfor8k.util.Event
-import com.example.assignmentfor8k.util.HelperFunction
 import com.example.assignmentfor8k.util.Resource
 import com.example.assignmentfor8k.util.send
+import com.example.assignmentfor8k.util.sharePref.IpBasedRegion.getCountry
+import com.example.assignmentfor8k.util.sharePref.IpBasedRegion.updateCountry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
@@ -40,7 +41,8 @@ import kotlin.math.absoluteValue
 class MainViewModel @Inject constructor(
     app: Application,
     private val newsRepository: NewsRepository,
-    private val chipRepository: ChipRepository
+    private val chipRepository: ChipRepository,
+    private val ipApi: IpRegionCallInterface
 ) : AndroidViewModel(app) {
 
     /**
@@ -132,22 +134,28 @@ class MainViewModel @Inject constructor(
         if (currentPage != null) {
             topNewsPages = currentPage
         }
-
-        safeBreakingNews(category, sortedBy, topNewsPages)
+        val countryCode = getCountry(getApplication())
+        safeBreakingNews(category, sortedBy, topNewsPages, countryCode.lowercase())
 
     }
 
     /**
      * func to handle the news response and handling errors
      */
-    private suspend fun safeBreakingNews(category: String?, sortedBy: String, pageItem: Int) {
+    private suspend fun safeBreakingNews(
+        category: String?,
+        sortedBy: String,
+        pageItem: Int,
+        countryCode: String
+    ) {
         topNews.postValue(Resource.Loading())
         try {
+
             if (hasInternetConnection()) {
                 val response = if (category == null) {
-                    newsRepository.topNewArticles(sortedBy, "us", pageItem)
+                    newsRepository.topNewArticles(sortedBy, countryCode, pageItem)
                 } else {
-                    newsRepository.topNewArticlesCategory(category, sortedBy, "us", pageItem)
+                    newsRepository.topNewArticlesCategory(category, sortedBy, countryCode, pageItem)
                 }
 
                 topNews.postValue(handleTopNewsResponse(response))
@@ -281,6 +289,36 @@ class MainViewModel @Inject constructor(
 
     fun shareUrl(it: String) {
         _shareTextEvent.send(it)
+    }
+
+    fun startIpGetter() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+                val response = ipApi.getIPInfo()
+
+                if (response.isSuccessful) {
+                    Log.i("ipValue", "ip call resposne, - ${response.body()}")
+
+                    updateCountry(
+                        getApplication<Application>().applicationContext,
+                        response.body()?.country ?: "IN"
+                    )
+
+                } else {
+                    Log.i("ipValue", "ip call error, - ${response.errorBody()}")
+
+                }
+            } catch (exp: Exception) {
+                //  exp.printStackTrace()
+                //  Log.i("ipValue", "ip call error, - ${exp.code()}")
+                Log.i("ipValue", "ip call stack, - ${exp.printStackTrace()}")
+
+            }
+
+        }
+
     }
 
 }

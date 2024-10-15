@@ -9,6 +9,8 @@ import com.example.assignmentfor8k.repository.ChipRepository
 import com.example.assignmentfor8k.repository.NewsRepository
 import com.example.assignmentfor8k.retrofit.newsApi.newRetrofit.NewsApiInterface
 import com.example.assignmentfor8k.retrofit.newsApi.newRetrofit.NewsRetrofitInstance
+import com.example.assignmentfor8k.retrofit.userIp.Retrofit.RetrofitInstanceIpCall
+import com.example.assignmentfor8k.retrofit.userIp.api.IpRegionCallInterface
 import com.example.assignmentfor8k.util.Constants.getAllTheChips
 import dagger.Module
 import dagger.Provides
@@ -61,6 +63,12 @@ object AppDaggerModule {
     @Singleton
     fun providesChipsRepository(chipDao: ChipsDao): ChipRepository {
         return ChipRepository(chipDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesIpInterface(): IpRegionCallInterface {
+        return RetrofitInstanceIpCall.ipApi
     }
 
 

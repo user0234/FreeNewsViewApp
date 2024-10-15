@@ -1,4 +1,4 @@
-package com.example.assignmentfor8k.util
+package com.example.assignmentfor8k.util.sharePref
 
 import android.content.Context
 
@@ -20,25 +20,19 @@ object SharedPrefFunc {
         sharedPref.edit().putBoolean(key, value).apply()
     }
 
-    // chips tag
-    val TAG = "chipsTag"
-
-    fun getChipDataBase(context: Context) :Boolean {
-        return  getSharedPrefBoolean(
-            context,
-            TAG,
-            "chipDataBaseSetup",
-            true
-        )
+    fun getSharedPrefString(
+        context: Context,
+        tag: String,
+        value: String,
+        defaultValue: String,
+    ): String {
+        val sharedPref = context.getSharedPreferences(tag, Context.MODE_PRIVATE)
+        return sharedPref.getString(value, defaultValue) ?: defaultValue
     }
 
-    fun updateChipDataBase(context: Context, value: Boolean) {
-         putSharedPrefBoolean(
-            context,
-            TAG,
-            "chipDataBaseSetup",
-            value
-        )
+    fun putSharedPrefString(context: Context, tag: String, key: String, value: String) {
+        val sharedPref = context.getSharedPreferences(tag, Context.MODE_PRIVATE)
+        sharedPref.edit().putString(key, value).apply()
     }
 
 }
