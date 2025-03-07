@@ -5,16 +5,17 @@ plugins {
     id("kotlin-android")
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.dagger.hilt.android")
+    id ("realm-android")
 }
 
 android {
     namespace = "com.example.assignmentfor8k"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.assignmentfor8k"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -59,6 +60,7 @@ dependencies {
     // Navigation Components
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation(libs.androidx.recyclerview)
 
     // j unit testing -
     testImplementation("junit:junit:4.13.2")
